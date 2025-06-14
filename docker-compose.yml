@@ -5,25 +5,24 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: pdf-viewer-api-app
+    container_name: pdf-viewer-api
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/pdf_viewer?schema=public
-      - PORT=3000
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/pdf_viewer
+      - JWT_SECRET=your_jwt_secret_key
+      - JWT_EXPIRATION=1d
+      - UPLOAD_DIR=/app/uploads
     volumes:
-      - uploads_data:/app/uploads
+      - uploads:/app/uploads
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     restart: unless-stopped
-    networks:
-      - app-network
 
   db:
     image: postgres:16-alpine
-    container_name: pdf-viewer-api-db
+    container_name: pdf-viewer-db
     ports:
       - "5433:5432"
     environment:
@@ -32,20 +31,11 @@ services:
       - POSTGRES_DB=pdf_viewer
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
     restart: unless-stopped
-    networks:
-      - app-network
 
 volumes:
   postgres_data:
-    name: pdf-viewer-postgres-data
-  uploads_data:
-    name: pdf-viewer-uploads-data
+  uploads:
 
 networks:
   app-network:
