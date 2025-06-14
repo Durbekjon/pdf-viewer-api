@@ -24,6 +24,9 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Install netcat for database connection check
+RUN apk add --no-cache netcat-openbsd
+
 # Copy package files
 COPY package*.json ./
 COPY yarn.lock ./
@@ -37,9 +40,11 @@ COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
 # Copy Prisma schema
 COPY prisma ./prisma
+COPY docker-entrypoint.sh ./
 
 # Create uploads directory
-RUN mkdir -p uploads && chown -R node:node uploads
+RUN mkdir -p uploads && chown -R node:node uploads && \
+    chmod +x docker-entrypoint.sh
 
 # Switch to non-root user
 USER node
@@ -47,5 +52,4 @@ USER node
 # Expose the port the app runs on
 EXPOSE 3001
 
-# Start the application
-CMD ["yarn", "start:prod"] 
+ENTRYPOINT ["./docker-entrypoint.sh"] 
