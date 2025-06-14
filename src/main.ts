@@ -10,9 +10,9 @@ async function bootstrap() {
     bodyParser: true,
   });
 
-  // Configure body parser limits for large file uploads
-  app.useBodyParser('json', { limit: '200mb' });
-  app.useBodyParser('urlencoded', { limit: '200mb', extended: true });
+  // // Configure body parser limits for large file uploads
+  // app.useBodyParser('json', { limit: '200mb' });
+  // app.useBodyParser('urlencoded', { limit: '200mb', extended: true });
 
   // Configure server timeouts
   app.getHttpServer().timeout = 0; // Remove server timeout

@@ -30,7 +30,9 @@ export class PdfFileController {
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new FileTypeValidator({ fileType: 'application/pdf' }),
+          new FileTypeValidator({ 
+            fileType: /(application\/pdf|application\/x-pdf|application\/octet-stream)$/ 
+          }),
         ],
       }),
     )
