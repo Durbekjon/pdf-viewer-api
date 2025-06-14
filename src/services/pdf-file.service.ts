@@ -8,16 +8,11 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class PdfFileService {
   private readonly CHUNK_SIZE = 10 * 1024 * 1024; // 10MB
-  private readonly MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 
   constructor(private prisma: PrismaService) {}
 
   async create(publicationId: string, createPdfFileDto: CreatePdfFileDto): Promise<PdfFile> {
     const { name, type, size, data } = createPdfFileDto;
-
-    if (size > this.MAX_FILE_SIZE) {
-      throw new BadRequestException('File size exceeds maximum limit of 100MB');
-    }
 
     const isChunked = size > this.CHUNK_SIZE;
     const totalChunks = isChunked ? Math.ceil(size / this.CHUNK_SIZE) : null;

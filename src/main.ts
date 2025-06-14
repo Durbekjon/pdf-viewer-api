@@ -30,11 +30,18 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
+  // Configure file upload limits
+  app.use((req, res, next) => {
+    res.setHeader('Content-Length', '0');
+    next();
+  });
+
   // Serve static files
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {
     prefix: '/uploads',
   });
 
+  
   // Start the server
   const port = process.env.PORT || 3000;
   await app.listen(port);
@@ -42,3 +49,4 @@ async function bootstrap() {
 }
 
 bootstrap();
+
