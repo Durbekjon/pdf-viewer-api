@@ -4,7 +4,6 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
-import express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -12,8 +11,8 @@ async function bootstrap() {
   });
 
   // Configure body parser limits for large file uploads
-  app.use(express.json({ limit: '200mb' }));
-  app.use(express.urlencoded({ limit: '200mb', extended: true }));
+  app.useBodyParser('json', { limit: '200mb' });
+  app.useBodyParser('urlencoded', { limit: '200mb', extended: true });
 
   // Configure server timeouts
   app.getHttpServer().timeout = 0; // Remove server timeout
