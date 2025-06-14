@@ -7,19 +7,26 @@ import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  
+
+  // Enable CORS
+  app.enableCors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    maxAge: 86400,
+  });
+
   // Enable validation
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    transform: true,
-  }));
-  app.setGlobalPrefix('api')
+  app.useGlobalPipes(new ValidationPipe());
+
   // Configure Swagger
   const config = new DocumentBuilder()
     .setTitle('PDF Viewer API')
-    .setDescription('API documentation for PDF Viewer application')
+    .setDescription('API for managing PDF publications and outlines')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
@@ -28,6 +35,10 @@ async function bootstrap() {
     prefix: '/uploads',
   });
 
-  await app.listen(process.env.PORT ?? 7080);
+  // Start the server
+  const port = process.env.PORT || 3001;
+  await app.listen(port);
+  console.log(`Application is running on: http://localhost:${port}`);
 }
+
 bootstrap();

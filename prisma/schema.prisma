@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,13 +6,62 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-model Pdf {
-  id String @id @default(uuid())
-  language Language @default(uz)
-  file String
-  @@map("pdfs")
+
+model Publication {
+  id           String        @id @default(uuid())
+  title        String        @default("Untitled")
+  publishedAt  DateTime
+  viewCount    Int          @default(0)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  pdfFiles     PdfFile[]
+  outlines     Outline[]
+  language     Language     @default(uz)
+
+  @@map("publications")
 }
 
+model PdfFile {
+  id            String        @id @default(uuid())
+  name          String
+  type          String
+  size          Int
+  isChunked     Boolean       @default(false)
+  totalChunks   Int?
+  createdAt     DateTime      @default(now())
+  publication   Publication   @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+  publicationId String
+  chunks        PdfChunk[]
+  file          String
+
+  @@map("pdf_files")
+}
+
+model PdfChunk {
+  id          String    @id @default(uuid())
+  chunkIndex  Int
+  data        String    @db.Text
+  createdAt   DateTime  @default(now())
+  pdfFile     PdfFile   @relation(fields: [pdfFileId], references: [id], onDelete: Cascade)
+  pdfFileId   String
+
+  @@map("pdf_chunks")
+}
+
+model Outline {
+  id            String    @id @default(uuid())
+  title         String
+  page          Int
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  publication   Publication @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+  publicationId String
+  parent        Outline?  @relation("OutlineHierarchy", fields: [parentId], references: [id])
+  parentId      String?
+  children      Outline[] @relation("OutlineHierarchy")
+
+  @@map("outlines")
+}
 
 enum Language {
   uz
