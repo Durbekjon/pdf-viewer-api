@@ -29,11 +29,7 @@ export class PdfFileController {
     @Param('publicationId') publicationId: string,
     @UploadedFile(
       new ParseFilePipe({
-        validators: [
-          new FileTypeValidator({ 
-            fileType: /(application\/pdf|application\/x-pdf|application\/octet-stream)$/ 
-          }),
-        ],
+        validators: [ ],
       }),
     )
     file: Express.Multer.File,
