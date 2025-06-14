@@ -5,6 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: pdf-viewer-api-app
     ports:
       - "3000:3000"
     environment:
@@ -12,7 +13,7 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/pdf_viewer?schema=public
       - PORT=3000
     volumes:
-      - ./uploads:/app/uploads
+      - uploads_data:/app/uploads
     depends_on:
       db:
         condition: service_healthy
@@ -22,6 +23,7 @@ services:
 
   db:
     image: postgres:16-alpine
+    container_name: pdf-viewer-api-db
     ports:
       - "5433:5432"
     environment:
@@ -41,8 +43,11 @@ services:
 
 volumes:
   postgres_data:
-    driver: local
+    name: pdf-viewer-postgres-data
+  uploads_data:
+    name: pdf-viewer-uploads-data
 
 networks:
   app-network:
+    name: pdf-viewer-network
     driver: bridge 
