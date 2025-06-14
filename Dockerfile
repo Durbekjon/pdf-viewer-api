@@ -39,7 +39,10 @@ COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY prisma ./prisma
 
 # Create uploads directory
-RUN mkdir -p uploads
+RUN mkdir -p uploads && chown -R node:node uploads
+
+# Switch to non-root user
+USER node
 
 # Expose the port the app runs on
 EXPOSE 3000
